@@ -64,7 +64,7 @@ public class Main {
          * checking cities on tickets
          */
         for (Ticket t : tickets.getTickets()) {
-            if (t.getOrigin_name().equals("Владивосток") && t.getDestination_name().equals("Тель-Авив")) {
+            if (t.getOrigin_name().equals(origin) && t.getDestination_name().equals(destination)) {
                 long duration = t.getDuration();
                 sumDuration += duration;
                 durations.add(duration);
@@ -75,23 +75,27 @@ public class Main {
          * calculate average flight duration
          * and put it in the result map
          */
-        long avgTime = sumDuration / durations.size();
-        int hoursAvg = (int) (avgTime / 3600000);
-        int minutesAvg = (int) ((avgTime % 3600000) / 60000);
-        result.put("averageDuration", String.format("The average flight duration from %s to %s: %d hours %d minutes",
-                origin, destination, hoursAvg, minutesAvg));
+        if (durations.isEmpty()) {
+            result.put("averageDuration", "0");
+            result.put("90thPercentile", "0");
+        } else {
+            long avgTime = sumDuration / durations.size();
+            int hoursAvg = (int) (avgTime / 3600000);
+            int minutesAvg = (int) ((avgTime % 3600000) / 60000);
+            result.put("averageDuration", String.format("The average flight duration from %s to %s: %d hours %d minutes",
+                    origin, destination, hoursAvg, minutesAvg));
 
-        /**
-         * calculate 90th percentile of flight duration
-         * and put it in the result map
-         */
-        Collections.sort(durations);
-        long percentile90 = durations.get(90 * durations.size() / 100 - 1);
-        int hoursPer90 = (int) (percentile90 / 3600000);
-        int minutesPer90 = (int) ((percentile90 % 3600000) / 60000);
-        result.put("90thPercentile", String.format("90th Percentile of flight duration from %s to %s: %d hours %d minutes",
-                origin, destination, hoursPer90, minutesPer90));
-
+            /**
+             * calculate 90th percentile of flight duration
+             * and put it in the result map
+             */
+            Collections.sort(durations);
+            long percentile90 = durations.get(90 * durations.size() / 100 - 1);
+            int hoursPer90 = (int) (percentile90 / 3600000);
+            int minutesPer90 = (int) ((percentile90 % 3600000) / 60000);
+            result.put("90thPercentile", String.format("90th Percentile of flight duration from %s to %s: %d hours %d minutes",
+                    origin, destination, hoursPer90, minutesPer90));
+        }
         return result;
     }
 }
